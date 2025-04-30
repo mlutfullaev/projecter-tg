@@ -1,28 +1,31 @@
-import {Injectable, UnauthorizedException} from '@nestjs/common';
-import {JwtService} from "@nestjs/jwt";
-import {PrismaService} from "../../prisma/prisma.service";
-import {checkTelegramInitData, parseInitData} from "./telegram.utils";
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { PrismaService } from '../../prisma/prisma.service';
+import { isValid, parse } from '@telegram-apps/init-data-node';
 
 @Injectable()
 export class AuthService {
-  constructor(private prisma: PrismaService, private jwt: JwtService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwt: JwtService,
+  ) {}
 
   async loginWithTelegram(initData: string) {
-    const isValid = checkTelegramInitData(initData, process.env.BOT_TOKEN as string);
-    if (!isValid) throw new UnauthorizedException('Invalid Telegram auth');
+    if (!isValid(initData, process.env.BOT_TOKEN as string))
+      throw new UnauthorizedException('Invalid Telegram auth 0');
 
-    const data = parseInitData(initData);
+    const data = parse(initData);
+    if (!data.user?.id)
+      throw new UnauthorizedException('Invalid Telegram auth');
 
-    if (!data.id) throw new UnauthorizedException('Invalid Telegram auth');
-
-    const telegramId = data.id;
+    const telegramId = data.user.id;
 
     let user = await this.prisma.user.findUnique({ where: { telegramId } });
     if (!user) {
       user = await this.prisma.user.create({
         data: {
           telegramId,
-          username: data.username,
+          username: data.user.username,
         },
       });
     }
