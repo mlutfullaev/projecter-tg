@@ -7,7 +7,7 @@ const mockInitData = 'query_id=AAFjxtQ3AgAAAGPG1Ddec1q8&user=%7B%22id%22%3A52316
 
 onMounted(() => {
   console.log(miniApp.initData)
-  console.log(window.Telegram.WebApp.initData)
+  console.log((window as any).Telegram.WebApp.initData)
 })
 </script>
 
