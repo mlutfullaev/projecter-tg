@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import {onMounted} from "vue";
+import {onMounted, watch} from "vue";
 import {useMiniApp} from "vue-tg";
 
-const {initData} = useMiniApp()
+const miniApp = useMiniApp()
 
 onMounted(() => {
-  console.log(initData)
+  console.log(miniApp.initData)
+})
+
+watch(miniApp, () => {
+  console.log(miniApp.initData)
 })
 </script>
 
