@@ -18,7 +18,7 @@ export class AuthService {
     if (!data.user?.id)
       throw new UnauthorizedException('Invalid Telegram auth');
 
-    const telegramId = data.user.id;
+    const telegramId = data.user.id + '';
 
     let user = await this.prisma.user.findUnique({ where: { telegramId } });
     if (!user) {

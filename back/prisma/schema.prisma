@@ -16,23 +16,26 @@ datasource db {
 
 model User {
   id         String          @id @default(uuid())
-  telegramId Int             @unique
+  telegramId String          @unique
   username   String?
   projects   Project[]       @relation("CreatedProjects")
   tasks      Task[]
   accesses   ProjectAccess[]
   createdAt  DateTime        @default(now())
+  Project    Project?        @relation(fields: [projectId], references: [id])
+  projectId  String?
 }
 
 model Project {
-  id          String          @id @default(uuid())
-  title       String
-  description String?
-  createdById String
-  createdBy   User            @relation("CreatedProjects", fields: [createdById], references: [id])
-  tasks       Task[]
-  accesses    ProjectAccess[]
-  createdAt   DateTime        @default(now())
+  id            String          @id @default(uuid())
+  title         String
+  description   String?
+  createdById   String
+  createdBy     User            @relation("CreatedProjects", fields: [createdById], references: [id])
+  tasks         Task[]
+  createdAt     DateTime        @default(now())
+  projectAccess ProjectAccess[]
+  User          User[]
 }
 
 model Task {
